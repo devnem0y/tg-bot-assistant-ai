@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Main-Class: com.devnem0y.tg_bot_assistant_ai.MainApplication
+
