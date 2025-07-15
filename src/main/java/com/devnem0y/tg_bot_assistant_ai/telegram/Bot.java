@@ -49,7 +49,8 @@ public class Bot implements SpringLongPollingBot, LongPollingSingleThreadUpdateC
     public void setCommands() {
         List<BotCommand> commands = List.of(
                 new BotCommand("/start", "Запуск бота"),
-                new BotCommand("/selectmodel", "Выбрать модель ИИ")
+                new BotCommand("/selectmodel", "Выбрать модель ИИ"),
+                new BotCommand("/currentmodel", "Текущая модель ИИ")
         );
 
         telegramClient.execute(new SetMyCommands(commands));
@@ -63,10 +64,33 @@ public class Bot implements SpringLongPollingBot, LongPollingSingleThreadUpdateC
 
             if (messageText.charAt(0) == '/') {
                 if (messageText.equals("/start")) {
-                    sendMessage("Привет! Я бот-помощник. Пожалуйста, напишите мне что-нибудь", chatId);
+                    sendMessage("\uD83E\uDD16 Привет! Я ваш персональный ИИ помощник в Telegram   \n" +
+                            "Готов облегчить ваше обучение, работу и повседневные задачи.  \n" +
+                            "\n" +
+                            "### Чем могу помочь?  \n" +
+                            "\uD83D\uDD0D Многофункциональность:  \n" +
+                            "Объясню сложные темы, сформулирую письма, составлю расписание, подберу книги/фильмы, переведу текст, сгенерирую идеи и даже поиграю в квиз.  \n" +
+                            "\n" +
+                            "\uD83D\uDCAC Естественный диалог:  \n" +
+                            "Беседа с вами «как с человеком» — понимаю контекст, запоминаю предпочтения и адаптируюсь под стиль общения.  \n" +
+                            "\n" +
+                            "\uD83C\uDF0D Многофункциональный помощник:  \n" +
+                            "Работаю с текстом, проверяю грамматику, даю советы по тайм-менеджменту, помогаю в учебе, бизнесе и личных проектах.  \n" +
+                            "\n" +
+                            "### Как начать?  \n" +
+                            "Просто задай вопрос и я постараюсь тебе помочь!\n" +
+                            "Есть несколько ИИ моделей на выбор.\n" +
+                            "\n" +
+                            "\uD83C\uDF10 Примеры запросов:  \n" +
+                            "- \"Как написать резюме?\"  \n" +
+                            "- \"Помоги решить задачу по математике\"  \n" +
+                            "- \"Что читать, если любишь фантастику?\"", chatId);
                 }
                 else if (messageText.equals("/selectmodel")) {
                     sendModelMenu(chatId);
+                }
+                else if (messageText.equals("/currentmodel")) {
+                    sendMessage("Текущая модель " + serviceAi.getCurrentModelName(), chatId);
                 }
                 else {
                     sendMessage("Такой команды нет", chatId);
@@ -107,18 +131,22 @@ public class Bot implements SpringLongPollingBot, LongPollingSingleThreadUpdateC
         SendMessage message = SendMessage.builder().chatId(chatId)
                 .text("Какую модель ИИ ты хочешь использовать?\n").build();
 
-        var button1 = InlineKeyboardButton.builder().text("qwen3_235b").callbackData("qwen3_235b").build();
-        var button2 = InlineKeyboardButton.builder().text("qwen3_32b").callbackData("qwen3_32b").build();
-        var button3 = InlineKeyboardButton.builder().text("google (пока самая плохая)").callbackData("google").build();
-        var button4 = InlineKeyboardButton.builder().text("deepseek_r1").callbackData("deepseek_r1").build();
-        var button5 = InlineKeyboardButton.builder().text("deepseek_v3 (на основе GPT4)").callbackData("deepseek_v3").build();
+        var button1 = InlineKeyboardButton.builder().text("deepseek_v3 (на основе GPT4) ⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("deepseek_v3").build();
+        var button2 = InlineKeyboardButton.builder().text("qwen3_235b ⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("qwen3_235b").build();
+        var button3 = InlineKeyboardButton.builder().text("deepseek_r1 ⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("deepseek_r1").build();
+        var button4 = InlineKeyboardButton.builder().text("qwen3_32b ⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("qwen3_32b").build();
+        var button5 = InlineKeyboardButton.builder().text("google_gemma_3_27b ⭐\uFE0F⭐\uFE0F").callbackData("gemma_3_27b").build();
+        var button6 = InlineKeyboardButton.builder().text("google_gemini_2.0 ⭐\uFE0F").callbackData("gemini_2").build();
+        var button7 = InlineKeyboardButton.builder().text("llama_3.2_11b ⭐\uFE0F").callbackData("llama_3_2_11b").build();
 
         List<InlineKeyboardRow> keyboardRows = List.of(
                 new InlineKeyboardRow(button1),
                 new InlineKeyboardRow(button2),
                 new InlineKeyboardRow(button3),
                 new InlineKeyboardRow(button4),
-                new InlineKeyboardRow(button5)
+                new InlineKeyboardRow(button5),
+                new InlineKeyboardRow(button6),
+                new InlineKeyboardRow(button7)
         );
 
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup(keyboardRows);
