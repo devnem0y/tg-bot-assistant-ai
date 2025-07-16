@@ -9,6 +9,7 @@ import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
 import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
+import org.telegram.telegrambots.meta.api.methods.send.SendChatAction;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -17,6 +18,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
+
+import java.time.Duration;
 import java.util.List;
 
 @Component
@@ -110,12 +113,31 @@ public class Bot implements SpringLongPollingBot, LongPollingSingleThreadUpdateC
     }
 
     @SneakyThrows
+    private void sendMessageTyping(Long chatId) {
+        SendChatAction action = new SendChatAction(chatId.toString(), "typing");
+
+        var timeout = Duration.ofSeconds(5); //TODO: Пока хардкодим 5 секунд, нужно будет переделать
+
+        while (!serviceAi.isResponseReceived()) {
+            telegramClient.execute(action);
+            try {
+                Thread.sleep(timeout);
+            } catch (InterruptedException e) {
+                System.err.println("Ошибка при задержке: " + e.getMessage());
+                break;
+            }
+        }
+    }
+
+    @SneakyThrows
     private void sendMessage(String message, Long chatId) {
         telegramClient.execute(SendMessage.builder().chatId(chatId).text(message).build());
     }
 
     @SneakyThrows
     private void sendMessageAi(String question, Long chatId) {
+        new Thread(() -> sendMessageTyping(chatId)).start();
+
         var response = serviceAi.getAnswer(question);
         var maxLength = 4096; //TODO: Возможно, стоит вынести в конфиг
 

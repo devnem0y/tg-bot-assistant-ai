@@ -23,6 +23,9 @@ public class ServiceAi {
     @Getter
     private String currentModelName;
 
+    @Getter
+    private boolean responseReceived;
+
     public ServiceAi(BotConfig config) {
         openRouter = OpenRouter.builder().apiKey(config.getOpenaiKey()).build();
         setModel(ModelAi.deepseek_v3);
@@ -44,14 +47,23 @@ public class ServiceAi {
     }
 
     public String getAnswer(String question){
+        responseReceived = false;
+
         try {
             PromptResult result = openRouter.sendPrompt(model, question);
-            if (!result.isSuccessful()) return "Не удалось получить ответ, проблема с OpenRouter API Key";
+            if (!result.isSuccessful()) {
+                responseReceived = true;
+                return "Не удалось получить ответ, проблема с OpenRouter API Key";
+            }
+
+            responseReceived = true;
             return result.getResponseMessage();
         } catch (OpenRouter.TooManyRequestsException tooManyRequestsException) {
+            responseReceived = true;
             return "Слишком много запросов, сбавь обороты";
         } catch (Exception e) { e.printStackTrace(System.err);}
 
+        responseReceived = true;
         return "Ошибка ИИ модели";
     }
 }
