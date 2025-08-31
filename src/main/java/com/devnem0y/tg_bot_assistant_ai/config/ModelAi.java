@@ -8,5 +8,8 @@ public enum ModelAi {
     gemini_2,
     deepseek_r1,
     deepseek_v3,
+    deepseek_v3_1,
+    gpt_oss_120b,
+    gpt_oss_20b,
     llama_3_2_11b,
 }

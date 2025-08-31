@@ -15,8 +15,11 @@ public class ServiceAi {
     private final String MODEL_GOOGLE_GEMMA_3_27B = "google/gemma-3-27b-it:free";
     private final String MODEL_DEEPSEEK_R1 = "deepseek/deepseek-r1-0528:free";
     private final String MODEL_DEEPSEEK_V3 = "deepseek/deepseek-chat-v3-0324:free";
+    private final String MODEL_DEEPSEEK_V3_1 = "deepseek/deepseek-chat-v3.1:free";
     private final String MODEL_LLAMA_3_2_11B = "meta-llama/llama-3.2-11b-vision-instruct:free";
     private final String MODEL_GOOGLE_GEMINI_2 = "google/gemini-2.0-flash-exp:free";
+    private final String MODEL_GPT_OSS_20B = "openai/gpt-oss-20b:free";
+    private final String MODEL_GPT_OSS_120B = "openai/gpt-oss-120b:free";
 
     private final OpenRouter openRouter;
     private Model model;
@@ -29,7 +32,7 @@ public class ServiceAi {
 
     public ServiceAi(BotConfig config) {
         openRouter = OpenRouter.builder().apiKey(config.getOpenaiKey()).build();
-        setModel(ModelAi.deepseek_v3);
+        setModel(ModelAi.deepseek_v3_1);
     }
 
     public void setModel(ModelAi modelAi){
@@ -41,6 +44,9 @@ public class ServiceAi {
             case gemini_2 -> MODEL_GOOGLE_GEMINI_2;
             case deepseek_r1 -> MODEL_DEEPSEEK_R1;
             case deepseek_v3 -> MODEL_DEEPSEEK_V3;
+            case deepseek_v3_1 -> MODEL_DEEPSEEK_V3_1;
+            case gpt_oss_20b -> MODEL_GPT_OSS_20B;
+            case gpt_oss_120b -> MODEL_GPT_OSS_120B;
             case llama_3_2_11b -> MODEL_LLAMA_3_2_11B;
         };
 
@@ -55,17 +61,17 @@ public class ServiceAi {
             PromptResult result = openRouter.sendPrompt(model, question);
             if (!result.isSuccessful()) {
                 responseReceived = true;
-                return "Не удалось получить ответ, проблема с OpenRouter API Key";
+                return "Не удалось получить ответ, проблема с OpenRouter API.";
             }
 
             responseReceived = true;
             return result.getResponseMessage();
         } catch (OpenRouter.TooManyRequestsException tooManyRequestsException) {
             responseReceived = true;
-            return "Слишком много запросов, сбавь обороты";
+            return "Слишком много запросов, модель " + model.getName() + " перегружена или не отвечает.";
         } catch (Exception e) { e.printStackTrace(System.err);}
 
         responseReceived = true;
-        return "Ошибка ИИ модели";
+        return "Ошибка модели " + model.getName() + ".";
     }
 }
