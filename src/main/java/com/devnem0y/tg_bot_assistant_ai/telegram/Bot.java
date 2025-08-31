@@ -41,8 +41,11 @@ public class Bot implements SpringLongPollingBot {
     public void setCommands() {
         List<BotCommand> commands = List.of(
                 new BotCommand("/start", "Запуск бота"),
+                new BotCommand("/checkconnect", "Проверка на подключение"),
                 new BotCommand("/selectmodel", "Выбрать модель ИИ"),
-                new BotCommand("/currentmodel", "Текущая модель ИИ")
+                new BotCommand("/currentmodel", "Текущая модель ИИ"),
+                new BotCommand("/parsemodeon", "Включить режим парсинга"),
+                new BotCommand("/parsemodeoff", "Выключить режим парсинга")
         );
 
         telegramClient.execute(new SetMyCommands(commands));

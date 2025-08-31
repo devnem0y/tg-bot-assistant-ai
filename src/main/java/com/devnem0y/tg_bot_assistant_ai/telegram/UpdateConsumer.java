@@ -3,8 +3,8 @@ package com.devnem0y.tg_bot_assistant_ai.telegram;
 import com.devnem0y.tg_bot_assistant_ai.config.ModelAi;
 import com.devnem0y.tg_bot_assistant_ai.service.ServiceAi;
 import lombok.SneakyThrows;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendChatAction;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -19,6 +19,8 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
 
     private final TelegramClient telegramClient;
     private final ServiceAi serviceAi;
+
+    private boolean isParsedMode = true;
 
     public UpdateConsumer(TelegramClient client, ServiceAi serviceAi) {
         this.telegramClient = client;
@@ -55,11 +57,20 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
                             "- \"Помоги решить задачу по математике\"  \n" +
                             "- \"Что читать, если любишь фантастику?\"", chatId);
                 }
+                else if (messageText.equals("/checkconnect")) {
+                    new Thread(() -> sendMessageAi("Привет", chatId)).start(); //TODO: Временное решение
+                }
                 else if (messageText.equals("/selectmodel")) {
                     sendModelMenu(chatId);
                 }
                 else if (messageText.equals("/currentmodel")) {
                     sendMessage("Текущая модель " + serviceAi.getCurrentModelName(), chatId);
+                }
+                else if (messageText.equals("/parsemodeon")) {
+                    isParsedMode = true;
+                }
+                else if (messageText.equals("/parsemodeoff")) {
+                    isParsedMode = false;
                 }
                 else {
                     sendMessage("Такой команды нет", chatId);
@@ -109,7 +120,8 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
 
         for (int i = 0; i < response.length(); i += maxLength) {
             String chunk = response.substring(i, Math.min(i + maxLength, response.length()));
-            SendMessage message = SendMessage.builder().chatId(chatId).text(chunk).parseMode("Markdown").build();
+            SendMessage message = SendMessage.builder().chatId(chatId).text(chunk).build();
+            message.setParseMode(isParsedMode ? ParseMode.MARKDOWN : null);
             telegramClient.execute(message);
         }
     }
@@ -120,12 +132,13 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
                 .text("Какую модель ИИ ты хочешь использовать?\n").build();
 
         var button1 = InlineKeyboardButton.builder().text("deepseek_v3 (на основе GPT4) ⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("deepseek_v3").build();
-        var button2 = InlineKeyboardButton.builder().text("qwen3_235b ⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("qwen3_235b").build();
-        var button3 = InlineKeyboardButton.builder().text("deepseek_r1 ⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("deepseek_r1").build();
-        var button4 = InlineKeyboardButton.builder().text("qwen3_32b ⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("qwen3_32b").build();
-        var button5 = InlineKeyboardButton.builder().text("google_gemma_3_27b ⭐\uFE0F⭐\uFE0F").callbackData("gemma_3_27b").build();
-        var button6 = InlineKeyboardButton.builder().text("google_gemini_2.0 ⭐\uFE0F").callbackData("gemini_2").build();
-        var button7 = InlineKeyboardButton.builder().text("llama_3.2_11b ⭐\uFE0F").callbackData("llama_3_2_11b").build();
+        var button2 = InlineKeyboardButton.builder().text("qwen3_coder ⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("qwen3_coder").build();
+        var button3 = InlineKeyboardButton.builder().text("qwen3_235b ⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("qwen3_235b").build();
+        var button4 = InlineKeyboardButton.builder().text("deepseek_r1 ⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("deepseek_r1").build();
+        var button5 = InlineKeyboardButton.builder().text("qwen3_32b ⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("qwen3_32b").build();
+        var button6 = InlineKeyboardButton.builder().text("google_gemma_3_27b ⭐\uFE0F⭐\uFE0F").callbackData("gemma_3_27b").build();
+        var button7 = InlineKeyboardButton.builder().text("google_gemini_2.0 ⭐\uFE0F").callbackData("gemini_2").build();
+        var button8 = InlineKeyboardButton.builder().text("llama_3.2_11b ⭐\uFE0F").callbackData("llama_3_2_11b").build();
 
         List<InlineKeyboardRow> keyboardRows = List.of(
                 new InlineKeyboardRow(button1),
@@ -134,7 +147,8 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
                 new InlineKeyboardRow(button4),
                 new InlineKeyboardRow(button5),
                 new InlineKeyboardRow(button6),
-                new InlineKeyboardRow(button7)
+                new InlineKeyboardRow(button7),
+                new InlineKeyboardRow(button8)
         );
 
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup(keyboardRows);

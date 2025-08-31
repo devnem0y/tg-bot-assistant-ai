@@ -11,6 +11,7 @@ public class ServiceAi {
 
     private final String MODEL_OWEN3_235B = "qwen/qwen3-235b-a22b:free";
     private final String MODEL_OWEN3_32B = "qwen/qwen3-32b:free";
+    private final String MODEL_OWEN3_CODER = "qwen/qwen3-coder:free";
     private final String MODEL_GOOGLE_GEMMA_3_27B = "google/gemma-3-27b-it:free";
     private final String MODEL_DEEPSEEK_R1 = "deepseek/deepseek-r1-0528:free";
     private final String MODEL_DEEPSEEK_V3 = "deepseek/deepseek-chat-v3-0324:free";
@@ -35,6 +36,7 @@ public class ServiceAi {
         String modelId = switch (modelAi) {
             case qwen3_235b -> MODEL_OWEN3_235B;
             case qwen3_32b -> MODEL_OWEN3_32B;
+            case qwen3_coder -> MODEL_OWEN3_CODER;
             case gemma_3_27b -> MODEL_GOOGLE_GEMMA_3_27B;
             case gemini_2 -> MODEL_GOOGLE_GEMINI_2;
             case deepseek_r1 -> MODEL_DEEPSEEK_R1;
