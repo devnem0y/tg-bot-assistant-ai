@@ -2,6 +2,7 @@ package com.devnem0y.tg_bot_assistant_ai.telegram;
 
 import com.devnem0y.tg_bot_assistant_ai.config.ModelAi;
 import com.devnem0y.tg_bot_assistant_ai.service.ServiceAi;
+import com.devnem0y.tg_bot_assistant_ai.tools.FormattingManager;
 import lombok.SneakyThrows;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -118,9 +119,25 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
         var response = serviceAi.getAnswer(question);
         var maxLength = 4096; //TODO: Возможно, стоит вынести в конфиг
 
-        for (int i = 0; i < response.length(); i += maxLength) {
-            String chunk = response.substring(i, Math.min(i + maxLength, response.length()));
-            SendMessage message = SendMessage.builder().chatId(chatId).text(chunk).build();
+        if (response.length() > maxLength) {
+            for (int i = 0; i < response.length(); i += maxLength) {
+                String chunk = response.substring(i, Math.min(i + maxLength, response.length()));
+                SendMessage message = SendMessage.builder().chatId(chatId).text(chunk).build();
+
+                if (isParsedMode) {
+                    var hasUnclosedFormatting = FormattingManager.hasUnclosedFormattingAdvanced(chunk);
+                    if (!hasUnclosedFormatting) message.setParseMode(ParseMode.MARKDOWN);
+                    else message.setParseMode(null);
+                }
+                else {
+                    message.setParseMode(null);
+                }
+
+                telegramClient.execute(message);
+            }
+        }
+        else {
+            SendMessage message = SendMessage.builder().chatId(chatId).text(response).build();
             message.setParseMode(isParsedMode ? ParseMode.MARKDOWN : null);
             telegramClient.execute(message);
         }
