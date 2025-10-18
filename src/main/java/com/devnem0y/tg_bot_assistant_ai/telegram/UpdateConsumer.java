@@ -148,30 +148,16 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
         SendMessage message = SendMessage.builder().chatId(chatId)
                 .text("Какую модель ИИ ты хочешь использовать?\n").build();
 
-        var button1 = InlineKeyboardButton.builder().text("deepseek_v3.1 (NEW) ⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("deepseek_v3_1").build();
-        var button2 = InlineKeyboardButton.builder().text("deepseek_v3 (часто перегружена) ⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("deepseek_v3").build();
-        var button3 = InlineKeyboardButton.builder().text("qwen3_coder ⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("qwen3_coder").build();
-        var button4 = InlineKeyboardButton.builder().text("qwen3_235b ⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("qwen3_235b").build();
-        var button5 = InlineKeyboardButton.builder().text("deepseek_r1 ⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("deepseek_r1").build();
-        var button6 = InlineKeyboardButton.builder().text("GPT_OSS_120b (NEW - крашится) ⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("gpt_oss_120b").build();
-        var button7 = InlineKeyboardButton.builder().text("GPT_OSS_20b (NEW) ⭐\uFE0F⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("gpt_oss_20b").build();
-        var button8 = InlineKeyboardButton.builder().text("qwen3_32b ⭐\uFE0F⭐\uFE0F⭐\uFE0F").callbackData("qwen3_32b").build();
-        var button9 = InlineKeyboardButton.builder().text("google_gemma_3_27b ⭐\uFE0F⭐\uFE0F").callbackData("gemma_3_27b").build();
-        var button10 = InlineKeyboardButton.builder().text("google_gemini_2.0 ⭐\uFE0F").callbackData("gemini_2").build();
-        var button11 = InlineKeyboardButton.builder().text("llama_3.2_11b (крашится) ⭐\uFE0F").callbackData("llama_3_2_11b").build();
+        var button1 = InlineKeyboardButton.builder().text("deepseek_r1t2_chimera").callbackData("deepseek_r1t2_chimera").build();
+        var button2 = InlineKeyboardButton.builder().text("qwen3_235b").callbackData("qwen3_235b").build();
+        var button3 = InlineKeyboardButton.builder().text("GPT_OSS_20b").callbackData("gpt_oss_20b").build();
+        var button4 = InlineKeyboardButton.builder().text("google_gemma_3_27b").callbackData("gemma_3_27b").build();
 
         List<InlineKeyboardRow> keyboardRows = List.of(
                 new InlineKeyboardRow(button1),
                 new InlineKeyboardRow(button2),
                 new InlineKeyboardRow(button3),
-                new InlineKeyboardRow(button4),
-                new InlineKeyboardRow(button5),
-                new InlineKeyboardRow(button6),
-                new InlineKeyboardRow(button7),
-                new InlineKeyboardRow(button8),
-                new InlineKeyboardRow(button9),
-                new InlineKeyboardRow(button10),
-                new InlineKeyboardRow(button11)
+                new InlineKeyboardRow(button4)
         );
 
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup(keyboardRows);
